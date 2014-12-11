@@ -9,7 +9,7 @@ public class ApplicationManager {
         JFrame mainFrame = new JFrame("Dice101");
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setSize(600, 600);
-        DiceTableViewController diceView = new DiceTableViewController();
+        DiceMatViewController diceView = new DiceMatViewController();
         mainFrame.add(diceView.getPanel1());
         mainFrame.setVisible(true);
     }
