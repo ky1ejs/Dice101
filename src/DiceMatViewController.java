@@ -5,12 +5,12 @@ import javax.swing.*;
  */
 public class DiceMatViewController {
     private JPanel view;
-    private JLabel dice1;
 
     public DiceMatViewController() {
         view.setSize(300, 300);
-        ImageIcon image = new ImageIcon("Assets/Dice.png");
-        dice1.setIcon(image);
+        ImageIcon imageIcon = new ImageIcon("Assets/Dice.png");
+        ImageLabel imageLabel = new ImageLabel(imageIcon.getImage(), 100, 100);
+        view.add(imageLabel);
     }
 
     public JPanel getPanel1() {

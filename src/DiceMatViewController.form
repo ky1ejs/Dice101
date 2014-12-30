@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="DiceMatViewController">
-  <grid id="27dc6" binding="view" layout-manager="BorderLayout" hgap="0" vgap="0">
+  <grid id="27dc6" binding="view" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
     </constraints>
@@ -8,25 +8,10 @@
     <border type="none"/>
     <children>
       <grid id="7a3a4" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
-        <constraints border-constraint="North"/>
+        <constraints/>
         <properties/>
         <border type="none"/>
-        <children>
-          <component id="6768b" class="javax.swing.JLabel" binding="dice1">
-            <constraints/>
-            <properties>
-              <preferredSize width="50" height="50"/>
-              <text value="text\"/>
-            </properties>
-          </component>
-          <component id="43169" class="javax.swing.JLabel">
-            <constraints/>
-            <properties>
-              <preferredSize width="50" height="50"/>
-              <text value="Label"/>
-            </properties>
-          </component>
-        </children>
+        <children/>
       </grid>
     </children>
   </grid>
