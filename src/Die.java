@@ -8,6 +8,10 @@ public class Die implements DieIntf, Comparable<Die> {
     ImageIcon image;
     int value;
 
+    public Die(int value) {
+        this.value = value;
+    }
+
     @Override
     public ImageIcon getDieImage() {
         return null;
