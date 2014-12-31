@@ -5,8 +5,8 @@ import javax.swing.*;
  * //This class should be called DieFace, but the coursework spec specifies that it must be called Die
  */
 public class Die implements DieIntf, Comparable<Die> {
-    ImageIcon image;
-    int value;
+    private ImageIcon image;
+    private int value;
 
     public Die(int value) {
         this.value = value;

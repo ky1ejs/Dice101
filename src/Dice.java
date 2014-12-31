@@ -5,7 +5,7 @@ import java.util.Random;
  * Created by kylejm on 31/12/14.
  */
 public class Dice {
-    ArrayList<Die> faces;
+    private ArrayList<Die> faces;
 
     public Dice() {
         faces = new ArrayList<Die>();
