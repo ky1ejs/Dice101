@@ -13,7 +13,7 @@ public class DiceMatViewController {
         view.add(imageLabel);
     }
 
-    public JPanel getPanel1() {
+    public JPanel getView() {
         return view;
     }
 }
