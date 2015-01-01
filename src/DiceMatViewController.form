@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="DiceMatViewController">
-  <grid id="27dc6" binding="view" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+  <grid id="27dc6" binding="view" layout-manager="BorderLayout" hgap="0" vgap="0">
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="7a3a4" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
-        <constraints/>
-        <properties/>
-        <border type="none"/>
-        <children/>
-      </grid>
+      <component id="6f243" class="javax.swing.JButton" binding="throwButton" default-binding="true">
+        <constraints border-constraint="South"/>
+        <properties>
+          <text value="Throw"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>
