@@ -34,6 +34,7 @@ public class DiceMatViewController extends MouseAdapter {
             ImageLabel label = userImageLabels.get(i);
             label.setImage(face.getDieImage().getImage());
         }
+        throwButton.setEnabled(true);
     }
 
     public JPanel getView() {
