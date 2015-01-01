@@ -10,16 +10,17 @@ public class Die implements DieIntf, Comparable<Die> {
 
     public Die(int value) {
         this.value = value;
+        setImage(null);
     }
 
     @Override
     public ImageIcon getDieImage() {
-        return null;
+        return image;
     }
 
     @Override
     public void setImage(ImageIcon image) {
-        if (value > 0 && value < 7) this.image = new ImageIcon(String.format("Assets/dice-%f", value));
+        if (value > 0 && value < 7) this.image = new ImageIcon(String.format("Assets/dice-%d.png", value));
     }
 
     @Override
