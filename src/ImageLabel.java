@@ -7,10 +7,18 @@ import java.awt.*;
 public class ImageLabel extends JLabel {
     private Image originalImage;
 
+    public ImageLabel(int width, int height) {
+        this.setSize(new Dimension(width, height));
+    }
+
     public ImageLabel(Image image, int width, int height) {
+        this.setSize(new Dimension(width, height));
+        setImage(image);
+    }
+
+    public void setImage(Image image){
         this.originalImage = image;
-        Image scaledImage = this.originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        Image scaledImage = this.originalImage.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
         this.setIcon(new ImageIcon(scaledImage));
-        this.setPreferredSize(new Dimension(width, height));
     }
 }
