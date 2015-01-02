@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -6,6 +7,7 @@ import java.util.Random;
  */
 public class Dice {
     private ArrayList<Die> faces;
+    private static ImageIcon blankImage;
 
     public Dice() {
         faces = new ArrayList<Die>();
@@ -22,5 +24,10 @@ public class Dice {
             results.add(faces.get(value - 1));
         }
         return results;
+    }
+
+    public ImageIcon getBlankFace() {
+        if (blankImage == null) blankImage = new ImageIcon("Assets/blank.png");
+        return blankImage;
     }
 }
