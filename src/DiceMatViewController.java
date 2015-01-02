@@ -39,10 +39,14 @@ public class DiceMatViewController extends MouseAdapter {
     @Override
     public void mouseReleased(MouseEvent e) {
         throwButton.setEnabled(false);
-        ArrayList<Die> results = dice.roll();
+        ArrayList<Die> userResults = dice.roll();
+        ArrayList<Die> computerResults = dice.roll();
         for (int i = 0; i < 5; i++) {
-            Die face = results.get(i);
+            Die face = userResults.get(i);
             ImageLabel label = userImageLabels.get(i);
+            label.setImage(face.getDieImage().getImage());
+            face = computerResults.get(i);
+            label = computerImageLabels.get(i);
             label.setImage(face.getDieImage().getImage());
         }
         throwButton.setEnabled(true);
