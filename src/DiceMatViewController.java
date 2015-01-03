@@ -17,6 +17,8 @@ public class DiceMatViewController extends MouseAdapter {
     private JPanel[][] computerStatContainers = new JPanel[gameStatRows][gameStatCols];
     private ArrayList<ImageLabel> userImageLabels = new ArrayList<ImageLabel>();
     private ArrayList<ImageLabel> computerImageLabels = new ArrayList<ImageLabel>();
+    private JLabel userScoreLabel = new JLabel();
+    private JLabel computerScoreLabel = new JLabel();
 
 
     public DiceMatViewController() {
@@ -41,8 +43,12 @@ public class DiceMatViewController extends MouseAdapter {
                 computerStatsGrid.add(computerStatContainers[row][col]);
             }
         }
-        userStatContainers[1][1].add(new JLabel("User")); //TODO: Make labels show centred over each set of dice
-        computerStatContainers[1][1].add(new JLabel("Computer"));
+        userStatContainers[0][1].add(new JLabel("User")); //TODO: Make labels show centred over each set of dice
+        computerStatContainers[0][1].add(new JLabel("Computer"));
+        userStatContainers[1][0].add(new JLabel("Score:"));
+        computerStatContainers[1][0].add(new JLabel("Score:"));
+        userStatContainers[1][1].add(userScoreLabel);
+        computerStatContainers[1][1].add(computerScoreLabel);
         JPanel statGridContainer = new JPanel(new BorderLayout());
         statGridContainer.add(userStatsGrid, BorderLayout.LINE_START);
         statGridContainer.add(computerStatsGrid, BorderLayout.LINE_END);
