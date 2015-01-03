@@ -22,15 +22,21 @@ public class DiceMatViewController extends MouseAdapter {
         throwButton.addMouseListener(this);
         view.setSize(300, 300);
         for (int i = 0; i < 5; i++) {
-            ImageLabel label = new ImageLabel(dice.getBlankFace().getImage(), 200, 200);
+            ImageLabel label = new ImageLabel(dice.getBlankFace().getImage(), 100, 100);
             userDice.add(label);
             userImageLabels.add(label);
         }
         for (int i = 0; i < 5; i++) {
-            ImageLabel label = new ImageLabel(dice.getBlankFace().getImage(), 200, 200);
+            ImageLabel label = new ImageLabel(dice.getBlankFace().getImage(), 100, 100);
             computerDice.add(label);
             computerImageLabels.add(label);
         }
+        JLabel userLabel = new JLabel("User"); //TODO: Make labels show centred over each set of dice
+        JLabel computerLabel = new JLabel("Computer");
+        JPanel labelPanel = new JPanel(new BorderLayout());
+        labelPanel.add(userLabel, BorderLayout.LINE_START);
+        labelPanel.add(computerLabel, BorderLayout.LINE_END);
+        view.add(labelPanel, BorderLayout.PAGE_START);
         view.add(userDice, BorderLayout.LINE_START);
         view.add(computerDice, BorderLayout.LINE_END);
         view.add(throwButton, BorderLayout.PAGE_END);
