@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class DiceMatViewController extends MouseAdapter {
     private JPanel view = new JPanel(new BorderLayout());
     private JButton throwButton = new JButton("Throw");
+    private JButton scoreButton = new JButton("Score");
     private Dice dice = new Dice();
     private int gameStatRows = 2;
     private int gameStatCols = 3;
@@ -28,8 +29,7 @@ public class DiceMatViewController extends MouseAdapter {
     private void initGUI() {
         initGameStatGUI();
         initDiceGUI();
-        throwButton.addMouseListener(this);
-        view.add(throwButton, BorderLayout.PAGE_END);
+        initButtons();
     }
 
     private void initGameStatGUI() {
@@ -71,20 +71,33 @@ public class DiceMatViewController extends MouseAdapter {
         view.add(computerDice, BorderLayout.LINE_END);
     }
 
+    private void initButtons() {
+        JPanel buttonContainer = new JPanel(new BorderLayout());
+        throwButton.addMouseListener(this);
+        scoreButton.addMouseListener(this);
+        buttonContainer.add(throwButton, BorderLayout.LINE_START);
+        buttonContainer.add(scoreButton, BorderLayout.LINE_END);
+        view.add(buttonContainer, BorderLayout.PAGE_END);
+    }
+
     @Override
     public void mouseReleased(MouseEvent e) {
-        throwButton.setEnabled(false);
-        ArrayList<Die> userResults = dice.roll();
-        ArrayList<Die> computerResults = dice.roll();
-        for (int i = 0; i < 5; i++) {
-            Die face = userResults.get(i);
-            ImageLabel label = userImageLabels.get(i);
-            label.setImage(face.getDieImage().getImage());
-            face = computerResults.get(i);
-            label = computerImageLabels.get(i);
-            label.setImage(face.getDieImage().getImage());
+        if (e.getComponent() == throwButton) {
+            throwButton.setEnabled(false);
+            ArrayList<Die> userResults = dice.roll();
+            ArrayList<Die> computerResults = dice.roll();
+            for (int i = 0; i < 5; i++) {
+                Die face = userResults.get(i);
+                ImageLabel label = userImageLabels.get(i);
+                label.setImage(face.getDieImage().getImage());
+                face = computerResults.get(i);
+                label = computerImageLabels.get(i);
+                label.setImage(face.getDieImage().getImage());
+            }
+            throwButton.setEnabled(true);
+        } else {
+            //TODO: Add score logic
         }
-        throwButton.setEnabled(true);
     }
 
     public JPanel getView() {
