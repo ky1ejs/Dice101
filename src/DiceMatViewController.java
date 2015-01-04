@@ -112,10 +112,10 @@ public class DiceMatViewController extends MouseAdapter {
             }
             throwButton.setEnabled(true);
             rollCount++;
+            throwButton.setText(String.format("Re-roll - Re-rolls left: %d", 3 - rollCount));
             if (rollCount == 1) {
-                throwButton.setText("Re-roll");
                 scoreButton.setEnabled(true);
-            } else if (rollCount == 4) scoreDice();
+            } else if (rollCount == 3) scoreDice();
         } else {
             scoreDice();
         }
