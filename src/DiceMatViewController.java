@@ -8,14 +8,15 @@ import java.util.ArrayList;
  * Created by kylejm on 11/12/14.
  */
 public class DiceMatViewController extends MouseAdapter {
-    private JPanel view = new JPanel(new BorderLayout());
+    private JPanel view = new JPanel(new GridBagLayout());
+    private GridBagConstraints gridConstraints = new GridBagConstraints();
     private JButton throwButton = new JButton("Throw");
     private JButton scoreButton = new JButton("Score");
     private Dice dice = new Dice();
     private int gameStatRows = 2;
     private int gameStatCols = 3;
-    private JPanel[][] userStatContainers = new JPanel[gameStatRows][gameStatCols];
-    private JPanel[][] computerStatContainers = new JPanel[gameStatRows][gameStatCols];
+    private JPanel[][] userStatPanels = new JPanel[gameStatRows][gameStatCols];
+    private JPanel[][] computerStatPanels = new JPanel[gameStatRows][gameStatCols];
     private ArrayList<ImageLabel> userImageLabels = new ArrayList<ImageLabel>();
     private ArrayList<ImageLabel> computerImageLabels = new ArrayList<ImageLabel>();
     private JLabel userScoreLabel = new JLabel();
@@ -23,6 +24,9 @@ public class DiceMatViewController extends MouseAdapter {
 
 
     public DiceMatViewController() {
+        gridConstraints.fill = GridBagConstraints.BOTH;
+        gridConstraints.weightx = 1;
+        gridConstraints.weighty = 1;
         initGUI();
     }
 
@@ -37,22 +41,23 @@ public class DiceMatViewController extends MouseAdapter {
         JPanel computerStatsGrid = new JPanel(new GridLayout(gameStatRows, gameStatCols));
         for (int row = 0; row < gameStatRows; row++) {
             for (int col = 0; col < gameStatCols; col++) {
-                userStatContainers[row][col] = new JPanel();
-                userStatsGrid.add(userStatContainers[row][col]);
-                computerStatContainers[row][col] = new JPanel();
-                computerStatsGrid.add(computerStatContainers[row][col]);
+                userStatPanels[row][col] = new JPanel();
+                userStatsGrid.add(userStatPanels[row][col]);
+                computerStatPanels[row][col] = new JPanel();
+                computerStatsGrid.add(computerStatPanels[row][col]);
             }
         }
-        userStatContainers[0][1].add(new JLabel("User")); //TODO: Make labels show centred over each set of dice
-        computerStatContainers[0][1].add(new JLabel("Computer"));
-        userStatContainers[1][0].add(new JLabel("Score:"));
-        computerStatContainers[1][0].add(new JLabel("Score:"));
-        userStatContainers[1][1].add(userScoreLabel);
-        computerStatContainers[1][1].add(computerScoreLabel);
-        JPanel statGridContainer = new JPanel(new BorderLayout());
-        statGridContainer.add(userStatsGrid, BorderLayout.LINE_START);
-        statGridContainer.add(computerStatsGrid, BorderLayout.LINE_END);
-        view.add(statGridContainer, BorderLayout.PAGE_START);
+        userStatPanels[0][1].add(new JLabel("User")); //TODO: Make labels show centred over each set of dice
+        computerStatPanels[0][1].add(new JLabel("Computer"));
+        userStatPanels[1][0].add(new JLabel("Score:"));
+        computerStatPanels[1][0].add(new JLabel("Score:"));
+        userStatPanels[1][1].add(userScoreLabel);
+        computerStatPanels[1][1].add(computerScoreLabel);
+        gridConstraints.gridx = 0;
+        gridConstraints.gridy = 0;
+        view.add(userStatsGrid, gridConstraints);
+        gridConstraints.gridx = 1;
+        view.add(computerStatsGrid, gridConstraints);
     }
 
     private void initDiceGUI() {
@@ -60,24 +65,30 @@ public class DiceMatViewController extends MouseAdapter {
         JPanel userDice = new JPanel(diceLayout);
         JPanel computerDice = new JPanel(diceLayout);
         for (int i = 0; i < 5; i++) {
-            ImageLabel label = new ImageLabel(dice.getBlankFace().getImage(), 100, 100);
+            ImageLabel label = new ImageLabel(100, 100, dice.getBlankFace().getImage());
             userDice.add(label);
             userImageLabels.add(label);
-            label = new ImageLabel(dice.getBlankFace().getImage(), 100, 100);
+            label = new ImageLabel(100, 100, dice.getBlankFace().getImage());
             computerDice.add(label);
             computerImageLabels.add(label);
         }
-        view.add(userDice, BorderLayout.LINE_START);
-        view.add(computerDice, BorderLayout.LINE_END);
+        gridConstraints.gridx = 0;
+        gridConstraints.gridy = 1;
+        view.add(userDice, gridConstraints);
+        gridConstraints.gridx = 1;
+        view.add(computerDice, gridConstraints);
     }
 
     private void initButtons() {
-        JPanel buttonContainer = new JPanel(new BorderLayout());
         throwButton.addMouseListener(this);
         scoreButton.addMouseListener(this);
-        buttonContainer.add(throwButton, BorderLayout.LINE_START);
-        buttonContainer.add(scoreButton, BorderLayout.LINE_END);
-        view.add(buttonContainer, BorderLayout.PAGE_END);
+        gridConstraints.gridx = 0;
+        gridConstraints.gridy = 2;
+        gridConstraints.fill = GridBagConstraints.HORIZONTAL;
+        view.add(throwButton, gridConstraints);
+        gridConstraints.gridx = 1;
+        view.add(scoreButton, gridConstraints);
+        gridConstraints.fill = GridBagConstraints.BOTH;
     }
 
     @Override
