@@ -12,7 +12,8 @@ public class DiceMatViewController extends MouseAdapter {
     private GridBagConstraints gridConstraints = new GridBagConstraints();
     private JButton throwButton = new JButton("Throw");
     private JButton scoreButton = new JButton("Score");
-    private Dice dice = new Dice();
+    private Dice userDice = new Dice();
+    private Dice computerDice = new Dice();
     private int gameStatRows = 2;
     private int gameStatCols = 3;
     private JPanel[][] userStatPanels = new JPanel[gameStatRows][gameStatCols];
@@ -21,6 +22,9 @@ public class DiceMatViewController extends MouseAdapter {
     private ArrayList<ImageLabel> computerImageLabels = new ArrayList<ImageLabel>();
     private JLabel userScoreLabel = new JLabel();
     private JLabel computerScoreLabel = new JLabel();
+    private int rollCount = 0;
+    private int userScore = 0;
+    private int computerScore = 0;
 
 
     public DiceMatViewController() {
@@ -62,21 +66,21 @@ public class DiceMatViewController extends MouseAdapter {
 
     private void initDiceGUI() {
         GridLayout diceLayout = new GridLayout(3, 2);
-        JPanel userDice = new JPanel(diceLayout);
-        JPanel computerDice = new JPanel(diceLayout);
+        JPanel userDiceView = new JPanel(diceLayout);
+        JPanel computerDiceView = new JPanel(diceLayout);
         for (int i = 0; i < 5; i++) {
-            ImageLabel label = new ImageLabel(100, 100, dice.getBlankFace().getImage());
-            userDice.add(label);
+            ImageLabel label = new ImageLabel(100, 100, userDice.getBlankFace().getImage());
+            userDiceView.add(label);
             userImageLabels.add(label);
-            label = new ImageLabel(100, 100, dice.getBlankFace().getImage());
-            computerDice.add(label);
+            label = new ImageLabel(100, 100, computerDice.getBlankFace().getImage());
+            computerDiceView.add(label);
             computerImageLabels.add(label);
         }
         gridConstraints.gridx = 0;
         gridConstraints.gridy = 1;
-        view.add(userDice, gridConstraints);
+        view.add(userDiceView, gridConstraints);
         gridConstraints.gridx = 1;
-        view.add(computerDice, gridConstraints);
+        view.add(computerDiceView, gridConstraints);
     }
 
     private void initButtons() {
@@ -89,14 +93,15 @@ public class DiceMatViewController extends MouseAdapter {
         gridConstraints.gridx = 1;
         view.add(scoreButton, gridConstraints);
         gridConstraints.fill = GridBagConstraints.BOTH;
+        scoreButton.setEnabled(false);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getComponent() == throwButton) {
             throwButton.setEnabled(false);
-            ArrayList<Die> userResults = dice.roll();
-            ArrayList<Die> computerResults = dice.roll();
+            ArrayList<Die> userResults = userDice.roll();
+            ArrayList<Die> computerResults = computerDice.roll();
             for (int i = 0; i < 5; i++) {
                 Die face = userResults.get(i);
                 ImageLabel label = userImageLabels.get(i);
@@ -106,9 +111,24 @@ public class DiceMatViewController extends MouseAdapter {
                 label.setImage(face.getDieImage().getImage());
             }
             throwButton.setEnabled(true);
+            rollCount++;
+            if (rollCount == 1) {
+                throwButton.setText("Re-roll");
+                scoreButton.setEnabled(true);
+            } else if (rollCount == 4) scoreDice();
         } else {
-            //TODO: Add score logic
+            scoreDice();
         }
+    }
+
+    private void scoreDice() {
+        userScore += userDice.scoreLatestResult();
+        computerScore += computerDice.scoreLatestResult();
+        userScoreLabel.setText(String.format("%d", userScore));
+        computerScoreLabel.setText(String.format("%d", computerScore));
+        throwButton.setText("Throw");
+        scoreButton.setEnabled(false);
+        rollCount = 0;
     }
 
     public JPanel getView() {
