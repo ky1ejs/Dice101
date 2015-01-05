@@ -52,7 +52,7 @@ public class DiceMatViewController extends MouseAdapter {
             }
         }
         userStatPanels[0][1].add(new JLabel("User")); //TODO: Make labels show centred over each set of dice
-        computerStatPanels[0][1].add(new JLabel("Computer"));
+        computerStatPanels[0][1].add(new JLabel("Computer")); //TODO: change this to user GridBagLayout
         userStatPanels[1][0].add(new JLabel("Score:"));
         computerStatPanels[1][0].add(new JLabel("Score:"));
         userStatPanels[1][1].add(userScoreLabel);
@@ -70,6 +70,7 @@ public class DiceMatViewController extends MouseAdapter {
         JPanel computerDiceView = new JPanel(diceLayout);
         for (int i = 0; i < 5; i++) {
             ImageLabel label = new ImageLabel(100, 100, userDice.getBlankFace().getImage());
+            label.addMouseListener(this);
             userDiceView.add(label);
             userImageLabels.add(label);
             label = new ImageLabel(100, 100, computerDice.getBlankFace().getImage());
@@ -81,6 +82,7 @@ public class DiceMatViewController extends MouseAdapter {
         view.add(userDiceView, gridConstraints);
         gridConstraints.gridx = 1;
         view.add(computerDiceView, gridConstraints);
+        setImageLabelsEnabled(false);
     }
 
     private void initButtons() {
@@ -94,6 +96,15 @@ public class DiceMatViewController extends MouseAdapter {
         view.add(scoreButton, gridConstraints);
         gridConstraints.fill = GridBagConstraints.BOTH;
         scoreButton.setEnabled(false);
+    }
+
+    private void setImageLabelsEnabled(boolean enabled) {
+        for (ImageLabel label : userImageLabels) {
+            label.setEnabled(enabled);
+        }
+        for (ImageLabel label : computerImageLabels) {
+            label.setEnabled(enabled);
+        }
     }
 
     @Override
@@ -115,9 +126,16 @@ public class DiceMatViewController extends MouseAdapter {
             throwButton.setText(String.format("Re-roll - Re-rolls left: %d", 3 - rollCount));
             if (rollCount == 1) {
                 scoreButton.setEnabled(true);
+                setImageLabelsEnabled(true);
             } else if (rollCount == 3) scoreDice();
-        } else {
+        } else if (e.getComponent() == scoreButton) {
             scoreDice();
+        } else if (e.getComponent().isEnabled()) {
+            ImageLabel selectedLabel = (ImageLabel) e.getComponent();
+            if (userImageLabels.contains(selectedLabel)) {
+                int index = userImageLabels.indexOf(selectedLabel);
+                selectedLabel.setImage(userDice.toggleSelectionOfDieAtIndex(index).getImage());
+            }
         }
     }
 
@@ -128,6 +146,9 @@ public class DiceMatViewController extends MouseAdapter {
         computerScoreLabel.setText(String.format("%d", computerScore));
         throwButton.setText("Throw");
         scoreButton.setEnabled(false);
+        setImageLabelsEnabled(false);
+        userDice.resetSelections();
+        computerDice.resetSelections();
         rollCount = 0;
     }
 

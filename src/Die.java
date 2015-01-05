@@ -6,6 +6,7 @@ import javax.swing.*;
  */
 public class Die implements DieIntf, Comparable<Die> {
     private ImageIcon image;
+    private ImageIcon selectedImage;
     private int value;
 
     public Die(int value) {
@@ -18,9 +19,16 @@ public class Die implements DieIntf, Comparable<Die> {
         return image;
     }
 
+    public ImageIcon getDieSelectedImage() {
+        return selectedImage;
+    }
+
     @Override
     public void setImage(ImageIcon image) {
-        if (value > 0 && value < 7) this.image = new ImageIcon(String.format("Assets/dice-%d.png", value));
+        if (value > 0 && value < 7) {
+            this.image = new ImageIcon(String.format("Assets/dice-%d.png", value));
+            this.selectedImage = new ImageIcon(String.format("Assets/dice-%d-selected.png", value));
+        }
     }
 
     @Override

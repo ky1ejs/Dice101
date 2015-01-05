@@ -9,6 +9,8 @@ public class Dice {
     private ArrayList<Die> faces = new ArrayList<Die>();
     private static ImageIcon blankImage;
     private ArrayList<Die> latestResult = new ArrayList<Die>();
+    private ArrayList<Integer> selectedDieFaceIndexes = new ArrayList<Integer>();
+    private Random numGen = new Random();
 
     public Dice() {
         for (int i = 0; i < 6; i++) {
@@ -17,13 +19,23 @@ public class Dice {
     }
 
     public ArrayList<Die> roll() {
-        latestResult = new ArrayList<Die>();
-        Random numGen = new Random();
-        for (int i = 0; i < 5; i++) {
-            int value = numGen.nextInt(7 - 1) + 1;
-            latestResult.add(faces.get(value - 1));
+        if (latestResult.size() == 0) {
+            latestResult = new ArrayList<Die>();
+            for (int i = 0; i < 5; i++) {
+                latestResult.add(newRandomDieFace());
+            }
+        } else {
+            for (int i = 0; i < 5; i++) {
+                if (!selectedDieFaceIndexes.contains(new Integer(i))) {
+                    latestResult.set(i, newRandomDieFace());
+                }
+            }
         }
         return latestResult;
+    }
+
+    private Die newRandomDieFace() {
+        return faces.get(numGen.nextInt(6));
     }
 
     public ImageIcon getBlankFace() {
@@ -37,6 +49,22 @@ public class Dice {
             score += dieFace.getValue();
         }
         return score;
+    }
+
+    public ImageIcon toggleSelectionOfDieAtIndex(int index) {
+        ImageIcon image;
+        if (selectedDieFaceIndexes.contains(new Integer(index))) {
+            selectedDieFaceIndexes.remove(new Integer(index));
+            image = latestResult.get(index).getDieImage();
+        } else {
+            selectedDieFaceIndexes.add(new Integer(index));
+            image = latestResult.get(index).getDieSelectedImage();
+        }
+        return image;
+    }
+
+    public void resetSelections() {
+        selectedDieFaceIndexes = new ArrayList<Integer>();
     }
 
     public ArrayList<Die> getLatestResult() {
