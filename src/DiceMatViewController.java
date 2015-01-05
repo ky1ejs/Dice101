@@ -116,16 +116,7 @@ public class DiceMatViewController extends MouseAdapter {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getComponent() == throwButton) {
-            throwButton.setEnabled(false);
-            rollUserDice();
-            rollComputerDice();
-            throwButton.setEnabled(true);
-            userRollCount++;
-            throwButton.setText(String.format("Re-roll - Re-rolls left: %d", 3 - userRollCount));
-            if (userRollCount == 1) {
-                scoreButton.setEnabled(true);
-                setImageLabelsEnabled(true);
-            } else if (userRollCount == 3) scoreDice();
+            rollDice();
         } else if (e.getComponent() == scoreButton) {
             scoreDice();
         } else if (e.getComponent().isEnabled()) {
@@ -137,7 +128,16 @@ public class DiceMatViewController extends MouseAdapter {
         }
     }
 
-    private void rollUserDice() {
+    private void rollDice() {
+        if (userRollCount == 0) {
+            rollUserDice(false);
+            rollComputerDice();
+        } else {
+            rollUserDice(true);
+        }
+    }
+
+    private void rollUserDice(final boolean rollComputerOnCompletion) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -147,6 +147,15 @@ public class DiceMatViewController extends MouseAdapter {
                     ImageLabel label = userImageLabels.get(i);
                     label.setImage(face.getDieImage().getImage());
                     i++;
+                }
+                userRollCount++;
+                int remainingRolls = 3 - userRollCount;
+                throwButton.setText(String.format("Re-roll - Re-rolls left: %d", remainingRolls));
+                userRollCountLabel.setText(String.format("%d", remainingRolls));
+                if (rollComputerOnCompletion) rollComputerDice();
+                if (userRollCount == 1) {
+                    scoreButton.setEnabled(true);
+                    setImageLabelsEnabled(true);
                 }
             }
         });
@@ -164,6 +173,9 @@ public class DiceMatViewController extends MouseAdapter {
                     label.setImage(face.getDieImage().getImage());
                     i++;
                 }
+                computerRollCount++;
+                computerRollCountLabel.setText(String.format("%d", 3 - computerRollCount));
+                if (computerRollCount == 3) scoreDice();
             }
         });
         thread.start();
@@ -180,6 +192,7 @@ public class DiceMatViewController extends MouseAdapter {
         userDice.resetSelections();
         computerDice.resetSelections();
         userRollCount = 0;
+        computerRollCount = 0;
     }
 
     public JPanel getView() {
