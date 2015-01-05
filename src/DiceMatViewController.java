@@ -14,17 +14,16 @@ public class DiceMatViewController extends MouseAdapter {
     private JButton scoreButton = new JButton("Score");
     private Dice userDice = new Dice();
     private Dice computerDice = new Dice();
-    private int gameStatRows = 2;
-    private int gameStatCols = 3;
-    private JPanel[][] userStatPanels = new JPanel[gameStatRows][gameStatCols];
-    private JPanel[][] computerStatPanels = new JPanel[gameStatRows][gameStatCols];
     private ArrayList<ImageLabel> userImageLabels = new ArrayList<ImageLabel>();
     private ArrayList<ImageLabel> computerImageLabels = new ArrayList<ImageLabel>();
-    private JLabel userScoreLabel = new JLabel();
-    private JLabel computerScoreLabel = new JLabel();
-    private int rollCount = 0;
+    private JLabel userScoreLabel = new JLabel("    ");
+    private JLabel computerScoreLabel = new JLabel("    ");
+    private JLabel userRollCountLabel = new JLabel("    ");
+    private JLabel computerRollCountLabel = new JLabel("    ");
     private int userScore = 0;
     private int computerScore = 0;
+    private int userRollCount = 0;
+    private int computerRollCount = 0;
 
 
     public DiceMatViewController() {
@@ -41,22 +40,29 @@ public class DiceMatViewController extends MouseAdapter {
     }
 
     private void initGameStatGUI() {
-        JPanel userStatsGrid = new JPanel(new GridLayout(gameStatRows, gameStatCols));
-        JPanel computerStatsGrid = new JPanel(new GridLayout(gameStatRows, gameStatCols));
-        for (int row = 0; row < gameStatRows; row++) {
-            for (int col = 0; col < gameStatCols; col++) {
-                userStatPanels[row][col] = new JPanel();
-                userStatsGrid.add(userStatPanels[row][col]);
-                computerStatPanels[row][col] = new JPanel();
-                computerStatsGrid.add(computerStatPanels[row][col]);
-            }
-        }
-        userStatPanels[0][1].add(new JLabel("User")); //TODO: Make labels show centred over each set of dice
-        computerStatPanels[0][1].add(new JLabel("Computer")); //TODO: change this to user GridBagLayout
-        userStatPanels[1][0].add(new JLabel("Score:"));
-        computerStatPanels[1][0].add(new JLabel("Score:"));
-        userStatPanels[1][1].add(userScoreLabel);
-        computerStatPanels[1][1].add(computerScoreLabel);
+        JPanel userStatsGrid = new JPanel(new GridBagLayout());
+        JPanel computerStatsGrid = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        userStatsGrid.add(new JLabel("User"), constraints);
+        computerStatsGrid.add(new JLabel("Computer"), constraints);
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        userStatsGrid.add(new JLabel("Score:"), constraints);
+        computerStatsGrid.add(new JLabel("Score:"), constraints);
+        constraints.gridx = 1;
+        userStatsGrid.add(userScoreLabel, constraints);
+        computerStatsGrid.add(computerScoreLabel, constraints);
+        constraints.gridx = 3;
+        userStatsGrid.add(new JLabel("Rolls left:"), constraints);
+        computerStatsGrid.add(new JLabel("Rolls left:"), constraints);
+        constraints.gridx = 4;
+        userStatsGrid.add(userRollCountLabel, constraints);
+        computerStatsGrid.add(computerRollCountLabel, constraints);
         gridConstraints.gridx = 0;
         gridConstraints.gridy = 0;
         view.add(userStatsGrid, gridConstraints);
@@ -114,12 +120,12 @@ public class DiceMatViewController extends MouseAdapter {
             rollUserDice();
             rollComputerDice();
             throwButton.setEnabled(true);
-            rollCount++;
-            throwButton.setText(String.format("Re-roll - Re-rolls left: %d", 3 - rollCount));
-            if (rollCount == 1) {
+            userRollCount++;
+            throwButton.setText(String.format("Re-roll - Re-rolls left: %d", 3 - userRollCount));
+            if (userRollCount == 1) {
                 scoreButton.setEnabled(true);
                 setImageLabelsEnabled(true);
-            } else if (rollCount == 3) scoreDice();
+            } else if (userRollCount == 3) scoreDice();
         } else if (e.getComponent() == scoreButton) {
             scoreDice();
         } else if (e.getComponent().isEnabled()) {
@@ -173,7 +179,7 @@ public class DiceMatViewController extends MouseAdapter {
         setImageLabelsEnabled(false);
         userDice.resetSelections();
         computerDice.resetSelections();
-        rollCount = 0;
+        userRollCount = 0;
     }
 
     public JPanel getView() {
