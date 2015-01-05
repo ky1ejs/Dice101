@@ -3,6 +3,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by kylejm on 11/12/14.
@@ -131,7 +134,7 @@ public class DiceMatViewController extends MouseAdapter {
     private void rollDice() {
         if (userRollCount == 0) {
             rollUserDice(false);
-            rollComputerDice();
+            rollComputerDice(false);
         } else {
             rollUserDice(true);
         }
@@ -152,7 +155,7 @@ public class DiceMatViewController extends MouseAdapter {
                 int remainingRolls = 3 - userRollCount;
                 throwButton.setText(String.format("Re-roll - Re-rolls left: %d", remainingRolls));
                 userRollCountLabel.setText(String.format("%d", remainingRolls));
-                if (rollComputerOnCompletion) rollComputerDice();
+                if (rollComputerOnCompletion) rollComputerDice(true);
                 if (userRollCount == 1) {
                     scoreButton.setEnabled(true);
                     setImageLabelsEnabled(true);
@@ -162,8 +165,8 @@ public class DiceMatViewController extends MouseAdapter {
         thread.start();
     }
 
-    private void rollComputerDice() {
-        Thread thread = new Thread(new Runnable() {
+    private void rollComputerDice(boolean withDelay) {
+        final Runnable task = new Runnable() {
             @Override
             public void run() {
                 ArrayList<Die> results = computerDice.roll();
@@ -177,8 +180,14 @@ public class DiceMatViewController extends MouseAdapter {
                 computerRollCountLabel.setText(String.format("%d", 3 - computerRollCount));
                 if (computerRollCount == 3) scoreDice();
             }
-        });
-        thread.start();
+        };
+        if (withDelay) {
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+            scheduler.schedule(task, 70, TimeUnit.MILLISECONDS);
+        } else {
+            Thread thread = new Thread(task);
+            thread.start();
+        }
     }
 
     private void scoreDice() {
