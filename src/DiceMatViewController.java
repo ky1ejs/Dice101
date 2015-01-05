@@ -111,16 +111,8 @@ public class DiceMatViewController extends MouseAdapter {
     public void mouseReleased(MouseEvent e) {
         if (e.getComponent() == throwButton) {
             throwButton.setEnabled(false);
-            ArrayList<Die> userResults = userDice.roll();
-            ArrayList<Die> computerResults = computerDice.roll();
-            for (int i = 0; i < 5; i++) {
-                Die face = userResults.get(i);
-                ImageLabel label = userImageLabels.get(i);
-                label.setImage(face.getDieImage().getImage());
-                face = computerResults.get(i);
-                label = computerImageLabels.get(i);
-                label.setImage(face.getDieImage().getImage());
-            }
+            rollUserDice();
+            rollComputerDice();
             throwButton.setEnabled(true);
             rollCount++;
             throwButton.setText(String.format("Re-roll - Re-rolls left: %d", 3 - rollCount));
@@ -137,6 +129,38 @@ public class DiceMatViewController extends MouseAdapter {
                 selectedLabel.setImage(userDice.toggleSelectionOfDieAtIndex(index).getImage());
             }
         }
+    }
+
+    private void rollUserDice() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Die> results = userDice.roll();
+                int i = 0;
+                for (Die face : results) {
+                    ImageLabel label = userImageLabels.get(i);
+                    label.setImage(face.getDieImage().getImage());
+                    i++;
+                }
+            }
+        });
+        thread.start();
+    }
+
+    private void rollComputerDice() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Die> results = computerDice.roll();
+                int i = 0;
+                for (Die face : results) {
+                    ImageLabel label = computerImageLabels.get(i);
+                    label.setImage(face.getDieImage().getImage());
+                    i++;
+                }
+            }
+        });
+        thread.start();
     }
 
     private void scoreDice() {
