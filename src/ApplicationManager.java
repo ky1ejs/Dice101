@@ -85,22 +85,22 @@ public class ApplicationManager extends MouseAdapter {
     }
 
     private static ArrayList<Integer> readScores() {
-        ArrayList<Integer> scoreInts = new ArrayList<Integer>();
-        String scoresStrings = null;
+        ArrayList<Integer> scores = new ArrayList<Integer>();
+        String scoresString  = null;
         File f = new File("./Dice101.scores");
         if (f.exists()) {
             try {
                 List<String> lines = Files.readAllLines(Paths.get("./Dice101.scores"));
-                scoresStrings = lines.get(0);
+                if (lines != null) scoresString = lines.get(0);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            if (scoresStrings != null) {
-                ArrayList<String> strings = new ArrayList<String>(Arrays.asList(scoresStrings.split("\\s*:\\s*")));
-                for (int i = 0; i < 2; i++)  scoreInts.add(Integer.parseInt(strings.get(i)));
+            if (scoresString != null) {
+                ArrayList<String> scoresSeperatedByComma = new ArrayList<String>(Arrays.asList(scoresString.split(":")));
+                for (int i = 0; i < 2; i++)  scores.add(Integer.parseInt(scoresSeperatedByComma.get(i)));
             }
         }
-        return scoreInts;
+        return scores;
 
     }
 }
