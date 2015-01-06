@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +29,8 @@ public class DiceMatViewController extends MouseAdapter {
     private int computerScore = 0;
     private int userRollCount = 0;
     private int computerRollCount = 0;
+    private final int diceHoldDelay = 2500;
+    private final TimeUnit delayUnit = TimeUnit.MILLISECONDS;
 
 
     public DiceMatViewController() {
@@ -118,9 +122,9 @@ public class DiceMatViewController extends MouseAdapter {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.getComponent() == throwButton) {
+        if (e.getComponent() == throwButton && throwButton.isEnabled()) {
             rollDice();
-        } else if (e.getComponent() == scoreButton) {
+        } else if (e.getComponent() == scoreButton && scoreButton.isEnabled()) {
             scoreDice();
         } else if (e.getComponent().isEnabled()) {
             ImageLabel selectedLabel = (ImageLabel) e.getComponent();
@@ -132,16 +136,15 @@ public class DiceMatViewController extends MouseAdapter {
     }
 
     private void rollDice() {
-        if (userRollCount == 0) {
-            rollUserDice(false);
-            rollComputerDice(false);
-        } else {
-            rollUserDice(true);
-        }
+        if (userRollCount == 0) setImageLabelsEnabled(true);
+        throwButton.setEnabled(false);
+        scoreButton.setEnabled(false);
+        rollUserDice();
+        rollComputerDice();
     }
 
-    private void rollUserDice(final boolean rollComputerOnCompletion) {
-        Thread thread = new Thread(new Runnable() {
+    private void rollUserDice() {
+        Runnable task =  new Runnable() {
             @Override
             public void run() {
                 ArrayList<Die> results = userDice.roll();
@@ -151,45 +154,71 @@ public class DiceMatViewController extends MouseAdapter {
                     label.setImage(face.getDieImage().getImage());
                     i++;
                 }
+                userDice.resetSelections();
                 userRollCount++;
-                int remainingRolls = 3 - userRollCount;
-                throwButton.setText(String.format("Re-roll - Re-rolls left: %d", remainingRolls));
-                userRollCountLabel.setText(String.format("%d", remainingRolls));
-                if (rollComputerOnCompletion) rollComputerDice(true);
-                if (userRollCount == 1) {
-                    scoreButton.setEnabled(true);
-                    setImageLabelsEnabled(true);
-                }
-            }
-        });
-        thread.start();
-    }
-
-    private void rollComputerDice(boolean withDelay) {
-        final Runnable task = new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<Die> results = computerDice.roll();
-                int i = 0;
-                for (Die face : results) {
-                    ImageLabel label = computerImageLabels.get(i);
-                    label.setImage(face.getDieImage().getImage());
-                    i++;
-                }
-                computerRollCount++;
-                computerRollCountLabel.setText(String.format("%d", 3 - computerRollCount));
-                if (computerRollCount == 3) scoreDice();
+                userRollCountLabel.setText(String.format("%d", 3 - userRollCount));
             }
         };
-        if (withDelay) {
+        throwButton.setText(String.format("You're holding %d dice", userDice.selectionCount()));
+        if (userRollCount > 0) {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.schedule(task, 70, TimeUnit.MILLISECONDS);
+            scheduler.schedule(task, diceHoldDelay, delayUnit);
         } else {
             Thread thread = new Thread(task);
             thread.start();
         }
     }
 
+    private void rollComputerDice() {
+        final Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                if (computerRollCount > 0) {
+                    Random numGen = new Random();
+                    int qtyOfDiceToHold = numGen.nextInt(6); //from [0, 7) because there are 5 die faces and the option to not hold
+                    if (qtyOfDiceToHold > 0) {
+                        ArrayList<Integer> indexes = new ArrayList<Integer>(Arrays.asList(0, 1, 2, 3, 4));
+                        for (int i = 0; i < qtyOfDiceToHold; i++) {
+                            int indexToSelect = numGen.nextInt(indexes.size());
+                            ImageLabel label = computerImageLabels.get(indexes.get(indexToSelect));
+                            label.setImage(computerDice.toggleSelectionOfDieAtIndex(indexes.get(indexToSelect)).getImage());
+                            indexes.remove(indexToSelect);
+                        }
+                    }
+                    scoreButton.setText(String.format("Computer holding %d dice", qtyOfDiceToHold));
+                }
+                Runnable rollDice = new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<Die> results = computerDice.roll();
+                        int i = 0;
+                        for (Die face : results) {
+                            ImageLabel label = computerImageLabels.get(i);
+                            label.setImage(face.getDieImage().getImage());
+                            i++;
+                        }
+                        computerDice.resetSelections();
+                        computerRollCount++;
+                        computerRollCountLabel.setText(String.format("%d", 3 - computerRollCount));
+                        throwButton.setText("Re-roll");
+                        scoreButton.setText("Score");
+                        throwButton.setEnabled(true);
+                        scoreButton.setEnabled(true);
+                        if (computerRollCount == 3) scoreDice();
+
+                    }
+                };
+                if (computerRollCount > 0) {
+                    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+                    scheduler.schedule(rollDice, diceHoldDelay, delayUnit);
+                } else {
+                    rollDice.run();
+                }
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+    }
     private void scoreDice() {
         userScore += userDice.scoreLatestResult();
         computerScore += computerDice.scoreLatestResult();
@@ -198,7 +227,6 @@ public class DiceMatViewController extends MouseAdapter {
         throwButton.setText("Throw");
         scoreButton.setEnabled(false);
         setImageLabelsEnabled(false);
-        userDice.resetSelections();
         computerDice.resetSelections();
         userRollCount = 0;
         computerRollCount = 0;
