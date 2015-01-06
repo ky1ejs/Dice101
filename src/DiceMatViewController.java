@@ -45,7 +45,7 @@ public class DiceMatViewController extends MouseAdapter {
     public DiceMatViewController(int targetScore, int initialUserWins, int initialComputerWins) {
         this.targetScore = targetScore;
         this.userWins = initialUserWins;
-        this.computerScore = initialComputerWins;
+        this.computerWins = initialComputerWins;
         gridConstraints.fill = GridBagConstraints.BOTH;
         gridConstraints.weightx = 1;
         gridConstraints.weighty = 1;
