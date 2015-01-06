@@ -36,10 +36,16 @@ public class DiceMatViewController extends MouseAdapter {
     private JButton newGameButton;
     private int targetScore;
     private boolean rollOutMode;
+    private int userWins;
+    private int computerWins;
+    private JLabel userWinsLabel = new JLabel("    ");
+    private JLabel computerWinsLabel = new JLabel("    ");
 
 
-    public DiceMatViewController(int targetScore) {
+    public DiceMatViewController(int targetScore, int initialUserWins, int initialComputerWins) {
         this.targetScore = targetScore;
+        this.userWins = initialUserWins;
+        this.computerScore = initialComputerWins;
         gridConstraints.fill = GridBagConstraints.BOTH;
         gridConstraints.weightx = 1;
         gridConstraints.weighty = 1;
@@ -55,14 +61,18 @@ public class DiceMatViewController extends MouseAdapter {
     private void initGameStatGUI() {
         JPanel userStatsGrid = new JPanel(new GridBagLayout());
         JPanel computerStatsGrid = new JPanel(new GridBagLayout());
+        userStatsGrid.setBackground(new Color(96,176,249));
+        computerStatsGrid.setBackground(new Color(200,104,205));
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 0;
+        constraints.gridwidth = 2;
         userStatsGrid.add(new JLabel("User"), constraints);
         computerStatsGrid.add(new JLabel("Computer"), constraints);
+        constraints.gridwidth = 1;
         constraints.gridx = 0;
         constraints.gridy = 1;
         userStatsGrid.add(new JLabel("Score:"), constraints);
@@ -70,12 +80,20 @@ public class DiceMatViewController extends MouseAdapter {
         constraints.gridx = 1;
         userStatsGrid.add(userScoreLabel, constraints);
         computerStatsGrid.add(computerScoreLabel, constraints);
-        constraints.gridx = 3;
+        constraints.gridx = 2;
         userStatsGrid.add(new JLabel("Rolls left:"), constraints);
         computerStatsGrid.add(new JLabel("Rolls left:"), constraints);
-        constraints.gridx = 4;
+        constraints.gridx = 3;
         userStatsGrid.add(userRollCountLabel, constraints);
         computerStatsGrid.add(computerRollCountLabel, constraints);
+        constraints.gridx = 4;
+        userStatsGrid.add(new JLabel("Wins:"), constraints);
+        computerStatsGrid.add(new JLabel("Wins:"), constraints);
+        constraints.gridx = 5;
+        userStatsGrid.add(userWinsLabel, constraints);
+        computerStatsGrid.add(computerWinsLabel, constraints);
+        userWinsLabel.setText(String.format("%d", userWins));
+        computerWinsLabel.setText(String.format("%d", computerWins));
         gridConstraints.gridx = 0;
         gridConstraints.gridy = 0;
         view.add(userStatsGrid, gridConstraints);
@@ -284,15 +302,20 @@ public class DiceMatViewController extends MouseAdapter {
     }
 
     private void userWon(String winTitle, String winMessage, String newGameButtonText) {
-        initNewGameButton();
-        newGameButtonText += " - click here to play a new game";
-        newGameButton.setText(newGameButtonText);
-        JOptionPane.showMessageDialog(null, winMessage, winTitle, JOptionPane.PLAIN_MESSAGE);
+        userWins++;
+        userWinsLabel.setText(String.format("%d", userWins));
+        newWinnerSet(winTitle, winMessage, newGameButtonText);
     }
 
     private void computerWon(String winTitle, String winMessage, String newGameButtonText) {
-        initNewGameButton();
+        computerWins++;
+        computerWinsLabel.setText(String.format("%d", computerWins));
+        newWinnerSet(winTitle, winMessage, newGameButtonText);
+    }
+
+    private void newWinnerSet(String winTitle, String winMessage, String newGameButtonText) {
         newGameButtonText += " - click here to play a new game";
+        initNewGameButton();
         newGameButton.setText(newGameButtonText);
         JOptionPane.showMessageDialog(null, winMessage, winTitle, JOptionPane.PLAIN_MESSAGE);
     }
@@ -332,5 +355,13 @@ public class DiceMatViewController extends MouseAdapter {
 
     public JPanel getView() {
         return view;
+    }
+
+    public int getUserWins() {
+        return userWins;
+    }
+
+    public int getComputerWins() {
+        return  computerWins;
     }
 }
