@@ -67,6 +67,10 @@ public class Dice {
         selectedDieFaceIndexes = new ArrayList<Integer>();
     }
 
+    public int selectionCount() {
+        return selectedDieFaceIndexes.size();
+    }
+
     public ArrayList<Die> getLatestResult() {
         return latestResult;
     }
