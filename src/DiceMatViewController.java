@@ -129,6 +129,8 @@ public class DiceMatViewController extends MouseAdapter {
             rollDice();
         } else if (e.getComponent() == scoreButton && scoreButton.isEnabled()) {
             scoreDice();
+        } else if (e.getComponent() == newGameButton) {
+            newGame();
         } else if (e.getComponent().isEnabled()) {
             ImageLabel selectedLabel = (ImageLabel) e.getComponent();
             if (userImageLabels.contains(selectedLabel)) {
@@ -235,31 +237,46 @@ public class DiceMatViewController extends MouseAdapter {
         computerRollCount = 0;
         if (userScore >= 50 || computerScore >= 50) {
             if (newGameButton == null) {
-                newGameButton = new JButton("New game");
-                view.remove(throwButton);
-                view.remove(scoreButton);
-                GridBagConstraints constraints = new GridBagConstraints();
-                constraints.fill = GridBagConstraints.HORIZONTAL;
-                constraints.weightx = 1;
-                constraints.weighty = 1;
-                constraints.gridwidth = 2;
-                constraints.gridx = 0;
-                constraints.gridy = 2;
-                view.add(newGameButton, constraints);
+                newGameButton = new JButton();
+                newGameButton.addMouseListener(this);
             }
+            view.remove(throwButton);
+            view.remove(scoreButton);
+            GridBagConstraints constraints = new GridBagConstraints();
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.gridwidth = 2;
+            constraints.gridx = 0;
+            constraints.gridy = 2;
+            view.add(newGameButton, constraints);
             throwButton.setEnabled(false);
             scoreButton.setEnabled(false);
             if (userScore >= 50)  {
+                newGameButton.setText("You won! - click here to play a new game");
                 JOptionPane.showMessageDialog(null, "You won!", "Congratulations!", JOptionPane.DEFAULT_OPTION);
-                userScoreLabel.setText("You won!");
-                computerScoreLabel.setText("You won!");
             }
-            else {
+            else {;
+                newGameButton.setText("The computer won - click here to play a new game");
                 JOptionPane.showMessageDialog(null, "The computer won!", "BOOO!", JOptionPane.DEFAULT_OPTION);
-                userScoreLabel.setText("The computer won!");
-                computerScoreLabel.setText("The computer won!");
             }
         }
+    }
+
+    private void newGame() {
+        view.remove(newGameButton);
+        initButtons();
+        throwButton.setEnabled(true);
+        //the re-validate and repaint methods below need to be called to force the newGame button to be
+        //removed from screen and the other buttons to be re-drawn
+        throwButton.revalidate();
+        throwButton.repaint();
+        scoreButton.revalidate();
+        scoreButton.repaint();
+        userScore = 0;
+        computerScore = 0;
+        userScoreLabel.setText(String.format("%d", userScore));
+        computerScoreLabel.setText(String.format("%d", computerScore));
     }
 
     public JPanel getView() {
