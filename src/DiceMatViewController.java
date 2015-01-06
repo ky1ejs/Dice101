@@ -34,6 +34,8 @@ public class DiceMatViewController extends MouseAdapter {
     private final int diceHoldDelay = 2500;
     private final TimeUnit delayUnit = TimeUnit.MILLISECONDS;
     private JButton newGameButton;
+    private int targetScore = 50;
+    private boolean rollOutMode;
 
 
     public DiceMatViewController() {
@@ -159,12 +161,14 @@ public class DiceMatViewController extends MouseAdapter {
                     label.setImage(face.getDieImage().getImage());
                     i++;
                 }
-                userDice.resetSelections();
-                userRollCount++;
-                userRollCountLabel.setText(String.format("%d", 3 - userRollCount));
+                if (!rollOutMode) {
+                    userDice.resetSelections();
+                    userRollCount++;
+                    userRollCountLabel.setText(String.format("%d", 3 - userRollCount));
+                }
             }
         };
-        throwButton.setText(String.format("You're holding %d dice", userDice.selectionCount()));
+        if (!rollOutMode) throwButton.setText(String.format("You're holding %d dice", userDice.selectionCount()));
         if (userRollCount > 0) {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(task, diceHoldDelay, delayUnit);
@@ -203,13 +207,15 @@ public class DiceMatViewController extends MouseAdapter {
                             i++;
                         }
                         computerDice.resetSelections();
-                        computerRollCount++;
-                        computerRollCountLabel.setText(String.format("%d", 3 - computerRollCount));
-                        throwButton.setText("Re-roll");
-                        scoreButton.setText("Score");
+                        if (!rollOutMode) {
+                            computerRollCount++;
+                            computerRollCountLabel.setText(String.format("%d", 3 - computerRollCount));
+                            throwButton.setText("Re-roll");
+                            scoreButton.setText("Score");
+                        }
                         throwButton.setEnabled(true);
                         scoreButton.setEnabled(true);
-                        if (computerRollCount == 3) scoreDice();
+                        if (computerRollCount == 3 || rollOutMode) scoreDice();
 
                     }
                 };
@@ -235,32 +241,76 @@ public class DiceMatViewController extends MouseAdapter {
         computerDice.resetSelections();
         userRollCount = 0;
         computerRollCount = 0;
-        if (userScore >= 50 || computerScore >= 50) {
-            if (newGameButton == null) {
-                newGameButton = new JButton();
-                newGameButton.addMouseListener(this);
+        userRollCountLabel.setText(String.format("%d", userRollCount));
+        computerRollCountLabel.setText(String.format("%d", computerRollCount));
+        if (rollOutMode) {
+            if (userScore == computerScore) {
+                JOptionPane.showMessageDialog(null, "It's a tie again! Keep rolling!", "Keep going!", JOptionPane.PLAIN_MESSAGE);
+            } else {
+                rollOutMode = false;
+                if (userScore > computerScore) {
+                    userWon("Congratulations!", "You won the tie breaker!", "You won!");
+                } else {
+                    computerWon("Unlucky", "The computer won the tie breaker", "The computer won");
+                }
             }
-            view.remove(throwButton);
-            view.remove(scoreButton);
-            GridBagConstraints constraints = new GridBagConstraints();
-            constraints.fill = GridBagConstraints.HORIZONTAL;
-            constraints.weightx = 1;
-            constraints.weighty = 1;
-            constraints.gridwidth = 2;
-            constraints.gridx = 0;
-            constraints.gridy = 2;
-            view.add(newGameButton, constraints);
-            throwButton.setEnabled(false);
-            scoreButton.setEnabled(false);
-            if (userScore >= 50)  {
-                newGameButton.setText("You won! - click here to play a new game");
-                JOptionPane.showMessageDialog(null, "You won!", "Congratulations!", JOptionPane.DEFAULT_OPTION);
-            }
-            else {;
-                newGameButton.setText("The computer won - click here to play a new game");
-                JOptionPane.showMessageDialog(null, "The computer won!", "BOOO!", JOptionPane.DEFAULT_OPTION);
+        } else if (userScore >= targetScore || computerScore >= targetScore) {
+            if (userScore == computerScore) {
+                String alertMessage = "It's a tie! You now have a roll out. The first person to roll the highest score wins. There will be no re-rolls";
+                JOptionPane.showMessageDialog(null, alertMessage, "Tie breaker!", JOptionPane.PLAIN_MESSAGE);
+                scoreButton.setText("TIE BREAKER!");
+                userScore = 0;
+                computerScore = 0;
+                userScoreLabel.setText(String.format("%d", userScore));
+                computerScoreLabel.setText(String.format("%d", computerScore));
+                rollOutMode = true;
+                throwButton.setEnabled(true);
+            } else {
+                if (userScore >= targetScore && computerScore >= targetScore) {
+                    if (userScore > computerScore) {
+                        userWon("That was close", String.format("You won!\n\nYou both got to %d, but your score was higher", targetScore), "You won!");
+                    } else if (computerScore > userScore) {
+                        computerWon("Bad luck", String.format("The computer won\n\nYou both got to %d, but the computers score was higher", targetScore), "The computer won");
+                    }
+                } else if (userScore >= targetScore)  {
+                    userWon("Congratulations!", "You won!", "You won!");
+                }
+                else {
+                    computerWon("BOOOO!", "The computer won", "The computer won");
+                }
             }
         }
+    }
+
+    private void userWon(String winTitle, String winMessage, String newGameButtonText) {
+        initNewGameButton();
+        newGameButtonText += " - click here to play a new game";
+        newGameButton.setText(newGameButtonText);
+        JOptionPane.showMessageDialog(null, winMessage, winTitle, JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private void computerWon(String winTitle, String winMessage, String newGameButtonText) {
+        initNewGameButton();
+        newGameButtonText += " - click here to play a new game";
+        newGameButton.setText(newGameButtonText);
+        JOptionPane.showMessageDialog(null, winMessage, winTitle, JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private void initNewGameButton() {
+        if (newGameButton == null) {
+            newGameButton = new JButton();
+            newGameButton.addMouseListener(this);
+        }
+        view.remove(throwButton);
+        view.remove(scoreButton);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.gridwidth = 2;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        view.add(newGameButton, constraints);
     }
 
     private void newGame() {
