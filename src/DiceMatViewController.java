@@ -1,3 +1,5 @@
+import sun.awt.image.GifImageDecoder;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -31,6 +33,7 @@ public class DiceMatViewController extends MouseAdapter {
     private int computerRollCount = 0;
     private final int diceHoldDelay = 2500;
     private final TimeUnit delayUnit = TimeUnit.MILLISECONDS;
+    private JButton newGameButton;
 
 
     public DiceMatViewController() {
@@ -230,10 +233,23 @@ public class DiceMatViewController extends MouseAdapter {
         computerDice.resetSelections();
         userRollCount = 0;
         computerRollCount = 0;
-        if (userScore >= 101 || computerScore >= 101) {
+        if (userScore >= 50 || computerScore >= 50) {
+            if (newGameButton == null) {
+                newGameButton = new JButton("New game");
+                view.remove(throwButton);
+                view.remove(scoreButton);
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.fill = GridBagConstraints.HORIZONTAL;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.gridwidth = 2;
+                constraints.gridx = 0;
+                constraints.gridy = 2;
+                view.add(newGameButton, constraints);
+            }
             throwButton.setEnabled(false);
             scoreButton.setEnabled(false);
-            if (userScore >= 101)  {
+            if (userScore >= 50)  {
                 JOptionPane.showMessageDialog(null, "You won!", "Congratulations!", JOptionPane.DEFAULT_OPTION);
                 userScoreLabel.setText("You won!");
                 computerScoreLabel.setText("You won!");
