@@ -34,11 +34,12 @@ public class DiceMatViewController extends MouseAdapter {
     private final int diceHoldDelay = 2500;
     private final TimeUnit delayUnit = TimeUnit.MILLISECONDS;
     private JButton newGameButton;
-    private int targetScore = 50;
+    private int targetScore;
     private boolean rollOutMode;
 
 
-    public DiceMatViewController() {
+    public DiceMatViewController(int targetScore) {
+        this.targetScore = targetScore;
         gridConstraints.fill = GridBagConstraints.BOTH;
         gridConstraints.weightx = 1;
         gridConstraints.weighty = 1;
