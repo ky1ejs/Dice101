@@ -230,6 +230,20 @@ public class DiceMatViewController extends MouseAdapter {
         computerDice.resetSelections();
         userRollCount = 0;
         computerRollCount = 0;
+        if (userScore >= 101 || computerScore >= 101) {
+            throwButton.setEnabled(false);
+            scoreButton.setEnabled(false);
+            if (userScore >= 101)  {
+                JOptionPane.showMessageDialog(null, "You won!", "Congratulations!", JOptionPane.DEFAULT_OPTION);
+                userScoreLabel.setText("You won!");
+                computerScoreLabel.setText("You won!");
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "The computer won!", "BOOO!", JOptionPane.DEFAULT_OPTION);
+                userScoreLabel.setText("The computer won!");
+                computerScoreLabel.setText("The computer won!");
+            }
+        }
     }
 
     public JPanel getView() {
