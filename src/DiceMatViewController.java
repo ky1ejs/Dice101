@@ -29,6 +29,7 @@ public class DiceMatViewController extends MouseAdapter {
     private int computerScore = 0;
     private int userRollCount = 0;
     private int computerRollCount = 0;
+    private int computerReRollsQty = 0;
     private final int diceHoldDelay = 2500;
     private final TimeUnit delayUnit = TimeUnit.MILLISECONDS;
     private JButton newGameButton;
@@ -160,7 +161,11 @@ public class DiceMatViewController extends MouseAdapter {
     }
 
     private void rollDice() {
-        if (userRollCount == 0) setImageLabelsEnabled(true);
+        if (userRollCount == 0) {
+            setImageLabelsEnabled(true);
+            Random numGen = new Random();
+            computerReRollsQty = numGen.nextInt(2) + 1;
+        }
         throwButton.setEnabled(false);
         scoreButton.setEnabled(false);
         rollUserDice();
